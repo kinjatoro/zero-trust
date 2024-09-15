@@ -48,7 +48,7 @@ authRouter.post("/login", (req, res) => {
     if (!isMatch) return res.status(400).json({ msg: `Contraseña incorrecta` });
 
     // generar el token
-    const token = jwt.sign({ id: user.id, rol: user.rol }, JWT_SECRET, {
+    const token = jwt.sign({ id: user.id, rol: user.rol, username: user.nombre }, JWT_SECRET, {
       expiresIn: `1h`,
     });
 
