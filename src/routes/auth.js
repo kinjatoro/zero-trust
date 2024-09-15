@@ -16,7 +16,7 @@ authRouter.post("/register", (req, res) => {
 
   const hashedPassword = bcrypt.hashSync(password, 10);
 
-  const query = `INSERT INTO test_user (nombre, email, password, rol) VALUES (?, ?, ?, ?)`;
+  const query = `INSERT INTO usuarios (nombre, email, password, rol) VALUES (?, ?, ?, ?)`;
   connection.query(
     query,
     [nombre, email, hashedPassword, rol],
@@ -36,7 +36,7 @@ authRouter.post("/login", (req, res) => {
     return res.status(400).json({ msg: `Por favor complete todos los campos` });
   }
 
-  const query = `SELECT * FROM test_user WHERE email = ?`;
+  const query = `SELECT * FROM usuarios WHERE email = ?`;
   connection.query(query, [email], (err, results) => {
     if (err || results.length === 0)
       return res.status(400).json({ msg: `Usuario no encontrado` });
