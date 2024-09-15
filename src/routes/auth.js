@@ -52,6 +52,6 @@ authRouter.post("/login", (req, res) => {
       expiresIn: `1h`,
     });
 
-    res.json({ token, rol: user.rol });
+    res.json({ token, rol: user.rol, username: user.nombre });
   });
 });
