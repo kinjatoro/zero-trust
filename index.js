@@ -7,6 +7,8 @@ import mysql from "mysql2";
 const app = express();
 app.use(express.json());
 
+
+//test
 app.use(cors())
 
 
