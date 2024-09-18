@@ -20,7 +20,7 @@ export function authorizeRole(roles) {
     if (!roles.includes(req.userRole)) {
       return res
         .status(403)
-        .json({ msg: "No tienes permiso para acceder a esta ubicaión" });
+        .json({ msg: "No tienes permiso para acceder a esta ubicación" });
     }
     next();
   };
