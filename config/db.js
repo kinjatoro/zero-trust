@@ -6,11 +6,11 @@ export const connection = mysql.createConnection({
     // password: 'password',
     // database: 'mydb',
     // port: 3306 // El puerto por defecto para MySQL
-    host: "database-1.cswhig3bmwzx.us-east-1.rds.amazonaws.com",
+    host: "galicia-rds.czjxktqmtnno.us-east-1.rds.amazonaws.com",
     port: "3306",
     user: "admin",
-    password: "kinjatoro60",
-    database: "my_db",
+    password: "password",
+    database: "galicia",
 })
 
 connection.connect(err => {
@@ -20,10 +20,7 @@ connection.connect(err => {
 
 const selectAllQuery = `
 
-select * from ips_registradas;
-
-
-
+select * from usuarios;
 
 `
 
