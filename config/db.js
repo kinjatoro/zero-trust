@@ -20,10 +20,10 @@ connection.connect(err => {
 
 const selectAllQuery = `
 
-SELECT * FROM verification_codes 
-WHERE user_id = 3 
-AND code = '109672' 
-AND expires_at > DATE_SUB(UTC_TIMESTAMP(), INTERVAL 3 HOUR);
+select * from ips_registradas;
+
+
+
 
 `
 
