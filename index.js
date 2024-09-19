@@ -1,75 +1,14 @@
-import https from 'https';
 import express from "express";
 import { router } from "./src/routes/hello.js";
 import {authRouter} from "./src/routes/auth.js"
 import cors from 'cors'
 import mysql from "mysql2";
-import fs from 'fs'; // Necesario para manejar archivos de sistema
 
 const app = express();
-
-const privateKey = `
------BEGIN PRIVATE KEY-----
-MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCx5p0OagHIWO21
-MAqItmJOqv7WiZTAOdqplDI1SNgEcjOwAkJppS06ws5XZZZZVYrshzyMK7/uDULL
-CRcJFVXejfj7PVwFOEo5Tu0wkomzaNsz7XmyI2x2p2GoTTjTnIIyJE6i3pT31TVP
-5HP10AecpEw1Hm95bYWB0R+wE7RcXThdbn1gjq1JWyxzxvz9iCYycjXd+arrf/eu
-ixY2AIJnIiKszYGzFgkvE4NEL9SllYwi1Q9nCsXeWndgeEmGkA/CrzlZpS9LWvoE
-fB+nCAL+RQwM2GKlszON6pvzdSCyS2ME532iOUUCMx7ogNiVJBGFc1PEuiD8opns
-SR71H8JRAgMBAAECggEAFXIsF8s+uMTDrzaB5pY6BqrFet5uELhIvG2xmcvUwsBz
-q7GyCONRLwbB8jY8aDuQOlBZQ7qYch2mIizP2pf4WJJ74+mzOKvfAsaZgGQB9p9a
-4YksxQVRM4KdGrloctYoudu3oRm9Ep1gxmdPdWAlMsR5rWOkY5qI4CvyKntNoF6n
-AwqsJuwgbqPb5M2n/Hg4UdT4B9OwDvCyNic06G+Zvn/cL5vnLwmNuc+yaYvOWv/j
-K4AFeAoui1zF9IHAOyU4OWyyNSDK8G2lnOIVJ2Erid82H2etKpdR+nG2RFE+LHm2
-WwDUqVx6k2HV8J0paSFcwnkvl07qxzxzFTNVqiDAQwKBgQDgRe/n3jQZgc3mHtXd
-LLcxJ+f1Vqg6Q4yMWfQhSIUUGBd1jskM5sql7oUq/WafuLWHCSpfgNhLTVPO2vDu
-EKdeM0nDbXJTbQUYZbWqUf7NPsxHQWCOWvtMxQ2q5PqMcn3fmRhWe1jP37CBcSKB
-ZxE15z6MjdGgC0cUE6Vb9KY2XwKBgQDLEUytVqpf2FPCH0wNz84YqqZyd9766mKO
-gj+IDIYiXnp163MaYR0j3CyLmFIxk+/oedEFWA51yR8cvfv79MCM7IJLh2zf0ING
-0Fhy61v4S1TNMxl0A4urTOIJy5lD2awUNP5TjdENTcmNEm4J/I2SWAoJWWalU5BM
-CM838g7lTwKBgEwLqtNGZwgXGYfkAMRkOyGx1Fc+MQDAktGsVrlKa8Vqfdngto9n
-WmN1QzZWggu6h+Ln2rRTbgPqjnZfir5Oa1HntiVL4S4kk0u4gSblcq6Jkp6+rkzW
-0MsxLfc6eTJSSBgfQz9fx7eEs8bQY9DY798FMBJcrC3GZS2Lk9BgXlOlAoGAEl8B
-SdlCVqNyiGhecA1xvseJgWeY06hqvCvKZZuEcw2LFKn1YtiQU1My8HoaTYPtu2Fx
-6ILb5AoK94W0i0nMNbOb4gthbSonBjwJFHR4gJEIHfxWfClp9FhjRrGVrw69Q6K7
-s4Fr/UEhT9LwA5VGlYvDdK8S2zghIM/XN199u38CgYEAnHUo4AC7t5PB1EyUiy9R
-sgjz3fDfxfTw8eo/B0IIgxHt3+K2B2P77DbbOfH2wi4j8SqtAPLyiar4dHbuiPZ3
-4tUupjTpcheVBUkYmJoPAUnFccOTkIvggv7CD0eli2hXIWkgwEZKUc8Fe69dNTuz
-jZJhEfTRXSLdluI3AHjalAs=
------END PRIVATE KEY-----
-`;
-
-const certificate = `
------BEGIN CERTIFICATE-----
-MIIDmzCCAoOgAwIBAgIUHBFY/LK7CPe7fXfGa5xjXC4aaO4wDQYJKoZIhvcNAQEL
-BQAwXTELMAkGA1UEBhMCQVUxEzARBgNVBAgMClNvbWUtU3RhdGUxITAfBgNVBAoM
-GEludGVybmV0IFdpZGdpdHMgUHR5IEx0ZDEWMBQGA1UEAwwNMzUuMTY5LjEyNS45
-MjAeFw0yNDA5MTkxODIxMTdaFw0yNDEwMTkxODIxMTdaMF0xCzAJBgNVBAYTAkFV
-MRMwEQYDVQQIDApTb21lLVN0YXRlMSEwHwYDVQQKDBhJbnRlcm5ldCBXaWRnaXRz
-IFB0eSBMdGQxFjAUBgNVBAMMDTM1LjE2OS4xMjUuOTIwggEiMA0GCSqGSIb3DQEB
-AQUAA4IBDwAwggEKAoIBAQCx5p0OagHIWO21MAqItmJOqv7WiZTAOdqplDI1SNgE
-cjOwAkJppS06ws5XZZZZVYrshzyMK7/uDULLCRcJFVXejfj7PVwFOEo5Tu0wkomz
-aNsz7XmyI2x2p2GoTTjTnIIyJE6i3pT31TVP5HP10AecpEw1Hm95bYWB0R+wE7Rc
-XThdbn1gjq1JWyxzxvz9iCYycjXd+arrf/euixY2AIJnIiKszYGzFgkvE4NEL9Sl
-lYwi1Q9nCsXeWndgeEmGkA/CrzlZpS9LWvoEfB+nCAL+RQwM2GKlszON6pvzdSCy
-S2ME532iOUUCMx7ogNiVJBGFc1PEuiD8opnsSR71H8JRAgMBAAGjUzBRMB0GA1Ud
-DgQWBBSdRC0BFDHdG/mskZdKIrG9n/+ySjAfBgNVHSMEGDAWgBSdRC0BFDHdG/ms
-kZdKIrG9n/+ySjAPBgNVHRMBAf8EBTADAQH/MA0GCSqGSIb3DQEBCwUAA4IBAQBF
-cuUoHCh4Z1oxCbSpcjodAKWy2N79ll7BrrkN7zXDXo1dNwC3RwXWSBxWms4glSWf
-IrdUWeOGMWMYOf1iIan4+kqkRJN7+xYWCWVKLuUDEhiIPwYD7uUxOWWgN8MGKeJs
-QrcKjDb47E1tyGvZgLGPIWNW9Rbj0t7Les3xRJm0Tb46VHJEWdE7RBQdQkC9lmYi
-BYnXEqueYKVIa8fvgoFRdNMeTeYrgSoiBtfB1ZGno0EQ+CNvYPmHnUCiGhF+x45q
-NKkCFAaIV5996XiddEhEGW3R0okw2K6uh62sYVDlh+c3Im7d47mzdsrN6A0DJDal
-XBvygrkmQmY+z7+7ivjD
------END CERTIFICATE-----
-`;
-
-const httpsOptions = {
-  key: privateKey,
-  cert: certificate
-}
-
 app.use(express.json());
+
+
+//test
 app.use(cors())
 
 
@@ -79,6 +18,6 @@ app.use("/api", authRouter);
 
 // app.use("/test")
 
-https.createServer(httpsOptions, app).listen(4000, () => {
-  console.log("Servidor HTTPS corriendo en el puerto 4000");
+app.listen(4000, () => {
+  console.log("Server on port 4000");
 });
