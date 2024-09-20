@@ -6,7 +6,7 @@ import  {sendMail}  from "../middleware/nodemailer.js"; // Importa el servicio d
 
 export const authRouter = express.Router();
 
-const JWT_SECRET = `inchaustikpo`
+const JWT_SECRET = `arqdeapps`
 
 authRouter.post("/register", (req, res) => {
   const { nombre, email, password, rol } = req.body;

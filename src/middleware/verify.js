@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-const JWT_SECRET = `inchaustikpo`;
+const JWT_SECRET = `arqdeapps`;
 
 export function verifyToken(req, res, next) {
   const token = req.headers["authorization"];
